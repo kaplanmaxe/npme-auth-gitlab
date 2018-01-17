@@ -15,9 +15,6 @@ const packageJson = {
         url: `git+https://gitlab.com${path}.git`
     }
 };
-const packageJsonMock = nock(frontDoorHost)
-    .get(`/${org}/${repo}?sharedFetchSecret=${sharedFetchSecret}`)
-    .reply(200, packageJson);
 
 let authorizer;
 
@@ -35,6 +32,9 @@ describe('authorizer.js', () => {
     });
 
     it('should fetch package.json', async () => {
+        const packageJsonMock = nock(frontDoorHost)
+            .get(`/${org}/${repo}?sharedFetchSecret=${sharedFetchSecret}`)
+            .reply(200, packageJson);
         const cb = jest.fn();
         const mockToken = faker.random.word();
         const test = await Authorizer.loadPackageJson({ path }, frontDoorHost, sharedFetchSecret, cb);
@@ -60,6 +60,9 @@ describe('authorizer.js', () => {
             },
             name: `${org}/${repo}`
         };
+        const packageJsonMock = nock(frontDoorHost)
+            .get(`/${org}/${repo}?sharedFetchSecret=${sharedFetchSecret}`)
+            .reply(200, packageJson);
         const gitLabNock = nock('http://gitlab.com')
             .get(`/api/v4/projects?search=${repo}`)
             .reply(200, [
