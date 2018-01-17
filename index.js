@@ -1,5 +1,7 @@
+require('dotenv').config();
+
 module.exports = {
-  Authenticator: require('./lib/authenticator'),
-  Authorizer: require('./lib/authorizer'),
-  Session: require('./lib/session')
+  Authenticator: require('./dist/authenticator'),
+  Authorizer: require('./dist/authorizer'),
+  Session: require('./dist/session')
 }

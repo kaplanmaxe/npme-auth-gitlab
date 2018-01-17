@@ -1,0 +1,10 @@
+{
+    "presets": [
+        ["env", { "browsers": "last 2 versions" }]
+    ],
+    "plugins": [
+        ["babel-plugin-transform-runtime", {
+            "polyfill": false
+        }]
+    ]
+}
