@@ -66,41 +66,126 @@ var Authorizer = function () {
 
   (0, _createClass3.default)(Authorizer, [{
     key: 'authorize',
-    value: function authorize(credentials, cb) {
-      var token = Authorizer.extractToken(credentials);
-      if (!token) return _error2.default.defer(cb, 401);
+    value: function () {
+      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(credentials, cb) {
+        var _this = this;
 
-      var self = this;
-      var requiredAccessLevel = void 0;
-      switch (credentials.method) {
-        case 'GET':
-          requiredAccessLevel = self.api.readAccessLevel();
-          break;
-        case 'PUT':
-        case 'POST':
-        case 'DELETE':
-          requiredAccessLevel = self.api.writeAccessLevel();
-          break;
-        default:
-          return _error2.default.defer(cb, 405, 'Unsupported method: ' + credentials.method);
+        var token, self, requiredAccessLevel, test;
+        return _regenerator2.default.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                token = Authorizer.extractToken(credentials);
+
+                if (token) {
+                  _context2.next = 3;
+                  break;
+                }
+
+                return _context2.abrupt('return', _error2.default.defer(cb, 401));
+
+              case 3:
+                self = this;
+                requiredAccessLevel = void 0;
+                _context2.t0 = credentials.method;
+                _context2.next = _context2.t0 === 'GET' ? 8 : _context2.t0 === 'PUT' ? 10 : _context2.t0 === 'POST' ? 10 : _context2.t0 === 'DELETE' ? 10 : 12;
+                break;
+
+              case 8:
+                requiredAccessLevel = self.api.readAccessLevel();
+                return _context2.abrupt('break', 13);
+
+              case 10:
+                requiredAccessLevel = self.api.writeAccessLevel();
+                return _context2.abrupt('break', 13);
+
+              case 12:
+                return _context2.abrupt('return', _error2.default.defer(cb, 405, 'Unsupported method: ' + credentials.method));
+
+              case 13:
+                _context2.next = 15;
+                return Authorizer.loadPackageJson(credentials, self.frontDoorHost, self.sharedFetchSecret, function () {
+                  var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(er, packageJson) {
+                    var orgRepo, project, authorized;
+                    return _regenerator2.default.wrap(function _callee$(_context) {
+                      while (1) {
+                        switch (_context.prev = _context.next) {
+                          case 0:
+                            if (!er) {
+                              _context.next = 2;
+                              break;
+                            }
+
+                            return _context.abrupt('return', cb(er));
+
+                          case 2:
+                            orgRepo = Authorizer.parseRepoUrl(packageJson);
+
+                            if (!(typeof orgRepo === 'string')) {
+                              _context.next = 5;
+                              break;
+                            }
+
+                            return _context.abrupt('return', cb(_error2.default.forCode(400, orgRepo)));
+
+                          case 5:
+                            _context.prev = 5;
+                            _context.next = 8;
+                            return _this.api.projectInfo(token, orgRepo.org, orgRepo.repo);
+
+                          case 8:
+                            project = _context.sent;
+
+                            if (project) {
+                              _context.next = 11;
+                              break;
+                            }
+
+                            return _context.abrupt('return', cb(_error2.default.forCode(400, 'No GitLab project found "' + orgRepo.org + '/' + orgRepo.repo + '"')));
+
+                          case 11:
+                            authorized = project.permissions && (project.permissions.project_access && project.permissions.project_access.access_level >= requiredAccessLevel || project.permissions.group_access && project.permissions.group_access.access_level >= requiredAccessLevel);
+
+                            cb(null, authorized);
+                            _context.next = 18;
+                            break;
+
+                          case 15:
+                            _context.prev = 15;
+                            _context.t0 = _context['catch'](5);
+
+                            cb(_context.t0);
+
+                          case 18:
+                          case 'end':
+                            return _context.stop();
+                        }
+                      }
+                    }, _callee, _this, [[5, 15]]);
+                  }));
+
+                  return function (_x3, _x4) {
+                    return _ref2.apply(this, arguments);
+                  };
+                }());
+
+              case 15:
+                test = _context2.sent;
+
+              case 16:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function authorize(_x, _x2) {
+        return _ref.apply(this, arguments);
       }
 
-      Authorizer.loadPackageJson(credentials, self.frontDoorHost, self.sharedFetchSecret, function (er, packageJson) {
-        if (er) return cb(er);
-
-        var orgRepo = Authorizer.parseRepoUrl(packageJson);
-        if (typeof orgRepo === 'string') return cb(_error2.default.forCode(400, orgRepo));
-
-        // check user access to repo
-        self.api.projectInfo(token, orgRepo.org, orgRepo.repo).then(function (project) {
-          if (!project) return cb(_error2.default.forCode(400, 'No GitLab project found "' + orgRepo.org + '/' + orgRepo.repo + '"'));
-          var authorized = project.permissions && (project.permissions.project_access && project.permissions.project_access.access_level >= requiredAccessLevel || project.permissions.group_access && project.permissions.group_access.access_level >= requiredAccessLevel);
-          cb(null, authorized);
-        }).catch(function (err) {
-          cb(err);
-        });
-      });
-    }
+      return authorize;
+    }()
   }], [{
     key: 'extractToken',
     value: function extractToken(credentials) {
@@ -119,58 +204,58 @@ var Authorizer = function () {
   }, {
     key: 'loadPackageJson',
     value: function () {
-      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(credentials, frontDoorHost, sharedFetchSecret, cb) {
+      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(credentials, frontDoorHost, sharedFetchSecret, cb) {
         var body, response;
-        return _regenerator2.default.wrap(function _callee$(_context) {
+        return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
                 body = credentials.body;
 
                 if (!(body && body.versions && body['dist-tags'] && body['dist-tags'].latest && body.versions[body['dist-tags'].latest])) {
-                  _context.next = 3;
+                  _context3.next = 3;
                   break;
                 }
 
-                return _context.abrupt('return', process.nextTick(function () {
+                return _context3.abrupt('return', process.nextTick(function () {
                   cb(null, body.versions[body['dist-tags'].latest]);
                 }));
 
               case 3:
-                _context.prev = 3;
-                _context.next = 6;
+                _context3.prev = 3;
+                _context3.next = 6;
                 return (0, _got2.default)(_url2.default.resolve(frontDoorHost, credentials.path + '?sharedFetchSecret=' + sharedFetchSecret), { json: true });
 
               case 6:
-                response = _context.sent;
+                response = _context3.sent;
 
                 if (!response.body.repository) {
-                  _context.next = 9;
+                  _context3.next = 9;
                   break;
                 }
 
-                return _context.abrupt('return', cb(null, response.body));
+                return _context3.abrupt('return', cb(null, response.body));
 
               case 9:
-                _context.next = 14;
+                _context3.next = 14;
                 break;
 
               case 11:
-                _context.prev = 11;
-                _context.t0 = _context['catch'](3);
+                _context3.prev = 11;
+                _context3.t0 = _context3['catch'](3);
 
-                cb(_context.t0);
+                cb(_context3.t0);
 
               case 14:
               case 'end':
-                return _context.stop();
+                return _context3.stop();
             }
           }
-        }, _callee, this, [[3, 11]]);
+        }, _callee3, this, [[3, 11]]);
       }));
 
-      function loadPackageJson(_x, _x2, _x3, _x4) {
-        return _ref.apply(this, arguments);
+      function loadPackageJson(_x5, _x6, _x7, _x8) {
+        return _ref3.apply(this, arguments);
       }
 
       return loadPackageJson;
