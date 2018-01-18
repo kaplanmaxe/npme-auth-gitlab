@@ -1,5 +1,5 @@
 import nock from 'nock';
-import Authenticator from '../lib/authenticator';
+import { Authenticator } from '../lib/authenticator';
 
 let authenticator;
 const token = 'mock_token';
