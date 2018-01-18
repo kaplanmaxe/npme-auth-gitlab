@@ -1,5 +1,5 @@
 import nock from 'nock';
-import {GitLab as api } from '../lib/api';
+import api from '../lib/api';
 const org = 'npm-auth-test';
 const repo = 'test-repo';
 let gitlab;

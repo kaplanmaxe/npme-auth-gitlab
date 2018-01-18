@@ -1,7 +1,7 @@
 import nock from 'nock';
 import faker from 'faker';
 import fs from 'fs';
-import { Authorizer } from '../lib/authorizer';
+import Authorizer from '../lib/authorizer';
 
 const frontDoorHost = 'http://frontdoor.npm.js';
 const org = '@npm-auth-test';
