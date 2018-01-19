@@ -7,7 +7,6 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "release": "standard-version",
-    "docker": "docker run --name='npm-registry' -i -t --rm -p 5984:5984 -p 80:80 burkostya/npm-registry:2.6.12",
     "build": "gulp transpile-module",
     "build:watch": "gulp",
     "prepublish": "yarn build"

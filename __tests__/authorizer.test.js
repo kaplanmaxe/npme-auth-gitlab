@@ -41,6 +41,7 @@ describe('authorizer.js', () => {
         url: 'http://gitlab.com',
         frontDoorHost,
         sharedFetchSecret,
+        debug: true,
     }));
 
     beforeEach(() => {

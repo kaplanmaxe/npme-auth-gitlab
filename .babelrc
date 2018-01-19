@@ -1,6 +1,6 @@
 {
     "presets": [
-        ["env", { "browsers": "last 2 versions" }]
+        ["env", { "node": "6.11" }]
     ],
     "plugins": [
         ["babel-plugin-transform-runtime", {
