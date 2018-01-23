@@ -5,7 +5,7 @@ let authenticator;
 const token = 'mock_token';
 // https://docs.gitlab.com/ee/api/users.html#for-admins
 const users = nock('http://gitlab.com')
-    .get('/api/v4/users?active=true')
+    .get('/api/v4/users?username=john_smith')
     .reply(200, [{
         "id": 1,
         "username": "john_smith",

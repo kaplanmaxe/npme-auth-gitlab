@@ -1,5 +1,7 @@
 # npme-auth-gitlab
 
+[![Build Status](https://travis-ci.org/kaplanmaxe/npme-auth-gitlab.svg?branch=master)](https://travis-ci.org/kaplanmaxe/npme-auth-gitlab)
+
 > Login to npm Enterprise using GitLab credentials
 
 Based on [GitLab's API](https://github.com/gitlabhq/gitlabhq/tree/master/doc/api)
