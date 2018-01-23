@@ -46,7 +46,12 @@ describe('authenticator', () => {
 
     it('should authenticate successfully', async () => {
         const callback = jest.fn();
-        await authenticator.authenticate({ body: { name: 'john_smith', email: 'john@example.com', token } }, callback);
+        try {
+            await authenticator.authenticate({ body: { name: 'john_smith', email: 'john@example.com', token } }, callback);
+        } catch (e) {
+            console.log(e);
+            expect(false).toBe(true);
+        }
         expect(callback.mock.calls.length).toBe(1);
         expect(callback).toBeCalledWith(null, {
             token: 'mock_token',
