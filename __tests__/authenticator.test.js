@@ -5,8 +5,8 @@ let authenticator;
 const token = 'mock_token';
 // https://docs.gitlab.com/ee/api/users.html#for-admins
 const users = nock('http://gitlab.com')
-    .get('/api/v4/users?username=john_smith')
-    .reply(200, [{
+    .get('/api/v4/user')
+    .reply(200, {
         "id": 1,
         "username": "john_smith",
         "email": "john@example.com",
@@ -39,7 +39,7 @@ const users = nock('http://gitlab.com')
         "can_create_project": true,
         "two_factor_enabled": true,
         "external": false
-      }]);
+      });
 
 describe('authenticator', () => {
     beforeAll(() => authenticator = new Authenticator({ url: 'http://gitlab.com', token }));
