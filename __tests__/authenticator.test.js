@@ -40,12 +40,10 @@ describe('Authenticator', () => {
                 "two_factor_enabled": true,
                 "external": false
             });
-
-        const token = 'mock_token';
-        const authenticator = new Authenticator({ url: 'http://gitlab.com', token })
+        const authenticator = new Authenticator({ url: 'http://gitlab.com' })
 
         const callback = jest.fn();
-        await authenticator.authenticate({ body: { name: 'john_smith', email: 'john@example.com', token } }, callback);
+        await authenticator.authenticate({ body: { name: 'john_smith', email: 'john@example.com', password: 'mock_token' } }, callback);
 
         expect(callback.mock.calls.length).toBe(1);
         expect(callback).toBeCalledWith(null, {
