@@ -1,0 +1,10 @@
+{
+    "presets": [
+        ["env", { "node": "6.11" }]
+    ],
+    "plugins": [
+        ["babel-plugin-transform-runtime", {
+            "polyfill": false
+        }]
+    ]
+}
