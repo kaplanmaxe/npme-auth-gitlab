@@ -46,6 +46,7 @@
     "dotenv": "^4.0.0",
     "github-url-from-git": "^1.4.0",
     "got": "^6.3.0",
+    "parse-repo": "^1.0.4",
     "redis": "^2.6.0-2"
   }
 }
