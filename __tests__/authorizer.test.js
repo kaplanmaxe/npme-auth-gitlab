@@ -3,7 +3,7 @@ import faker from 'faker';
 import fs from 'fs';
 import Authorizer from '../lib/authorizer';
 
-const frontDoorHost = 'http://frontdoor.npm.js';
+const frontDoorHost = 'http://gitlab.com';
 const org = '@npm-auth-test';
 const repo = 'test-repo';
 const path = '/@npm-auth-test/test-repo';
@@ -28,7 +28,7 @@ const credentials = {
     method: 'GET',
     path,
     headers: {
-        host: 'frontdoor.npm.js',
+        host: 'gitlab.com',
         authorization: `Bearer ${token}`,
     },
     name: `${org}/${repo}`
@@ -104,10 +104,9 @@ describe('authorizer.js', () => {
     });
 
     it('should fetch package.json', async () => {
-        const cb = jest.fn();
         const mockToken = faker.random.word();
-        const test = await Authorizer.loadPackageJson({ path }, frontDoorHost, sharedFetchSecret, cb);
-        expect(cb).toBeCalledWith(null, packageJson);
+        const parsedPackageJSON = await Authorizer.loadPackageJson({ path }, frontDoorHost, sharedFetchSecret);
+        expect(parsedPackageJSON).toMatchObject(packageJson);
     });
 
     it('should parse repo url', () => {
@@ -127,5 +126,60 @@ describe('authorizer.js', () => {
         const badCredentials = Object.assign({}, credentials, { name: `${credentials.name}1`, path: `${credentials.path}1` });
         await authorizer.authorize(badCredentials, cb);
         expect(cb).toBeCalledWith(null, false);
+    });
+
+    it('should allow reading cached public packages', async () => {
+        const request = {
+            method: 'GET',
+            path: '/@some/public-package',
+            headers: {
+                host: 'gitlab.com',
+                authorization: `Bearer ${token}`,
+            },
+            name: '@some/public-package',
+        };
+
+        // Notice the packageJSON references a repo that is not our source hosting 
+        const packageJsonMock = nock(frontDoorHost)
+            .get(`/@some/public-package?sharedFetchSecret=${sharedFetchSecret}`)
+            .reply(200, {
+                name: repo,
+                repository: {
+                    type: 'git',
+                    url: `git+https://bitbucket.com/@some/public-package.git`
+                },
+            });
+
+        const cb = jest.fn();
+        await authorizer.authorize(request, cb);
+        expect(cb).toBeCalledWith(null, true);
+    });
+
+    it('should not allow writing / publishing public packages', async () => {
+        const request = {
+            method: 'PUT',
+            path: '/@some/public-package',
+            headers: {
+                host: 'gitlab.com',
+                authorization: `Bearer ${token}`,
+            },
+            name: '@some/public-package',
+        };
+
+        // Notice the packageJSON references a repo that is not our source hosting 
+        const packageJsonMock = nock(frontDoorHost)
+            .get(`/@some/public-package?sharedFetchSecret=${sharedFetchSecret}`)
+            .reply(200, {
+                name: repo,
+                repository: {
+                    type: 'git',
+                    url: `git+https://bitbucket.com/@some/public-package.git`
+                },
+            });
+
+        const cb = jest.fn();
+        await authorizer.authorize(request, cb);
+        //expect(cb).not.toBeCalledWith(null, true);
+        expect(cb).toBeCalledWith(expect.stringContaining('Cannot publish over modules internally.'), false);
     });
 });
